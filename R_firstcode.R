@@ -1,4 +1,3 @@
-# My first code straight in GitHub (instead of copy 'n' paste on GitHub).
 # this script contains workflow for remote sensing course
 
 # we first install the needed packages
@@ -37,3 +36,76 @@ l2011[[4]] # this is the way to pick an element in a bi-dimensional space (such 
 # we could even recall it by its name: l2011$b4_sre
 # We could type: nir <- l2011[[4]] . Near infra red band is now assigned to a variable, easier to reach and recall.
 plot(l2011[[4]], col = cl) # this is the plot of the band number 4.
+
+
+# Yet another example of showing a picture and edit its color parameters.
+clb <- colorRampPalette(c("black","gray","light gray")) (100)
+plot(l2011$B1_sre, col=clb)
+
+# Now let's export the files.
+pdf("banda1.pdf")
+plot(l2011$B1_sre, col=clb)
+dev.off()
+
+png("banda1.png")
+plot(l2011$B1_sre, col=clb)
+dev.off()
+
+# Plot b2 from dark green to green to light green
+clg <- colorRampPalette(c("dark green", "green", "light green")) (100)
+plot(l2011$B2_sre, col=clg)
+
+# Multiframe lets you split the view on a single window, so you can compare more things at once.
+par(mfrow=c(1,2))
+plot(l2011$B1_sre, col=clb)
+plot(l2011$B2_sre, col=clg)
+dev.off()
+
+pdf("multiframe.pdf") # this function needs to be set before it's content, so when you write dev.off() it ends the process and saves as
+                      # PDF what you have done so far.
+par(mfrow=c(1,2))
+plot(l2011$B1_sre, col=clb)
+plot(l2011$B2_sre, col=clg)
+dev.off()
+
+# Exercise: revert the multiframe
+par(mfrow=c(2,1))
+plot(l2011$B1_sre, col=clb)
+plot(l2011$B2_sre, col=clg)
+
+# Let's plot the first four bands
+par(mfrow=c(2,2))
+# Blue
+plot(l2011$B1_sre, col=clb)
+# Green
+plot(l2011$B2_sre, col=clg)
+# Red
+clr <- colorRampPalette(c("dark red", "red", "pink")) (100)
+plot(l2011$B3_sre, col=clr)
+# NIR
+clnir <- colorRampPalette(c("red", "orange", "yellow")) (100)
+plot(l2011$B4_sre, col=clnir)
+
+# Plot RGB layers
+plotRGB(l2011, r=3, g=2, b=1, stretch="lin")
+plotRGB(l2011, r=3, g=4, b=2, stretch="lin")
+plotRGB(l2011, r=3, g=2, b=4, stretch="lin")
+
+plotRGB(l2011, r=3, g=4, b=2, stretch="hist")
+
+# Exercise: build a multiframe with visible RGB
+# (linear stretch) on top of false colours
+# (histogram stretch)
+par(mfrow=c(2,1))
+plotRGB(l2011, r=3, g=2, b=1, stretch="lin")
+plotRGB(l2011, r=3, g=4, b=2, stretch="hist")
+
+# Exercise: upload the image from 1988
+l1988 <- brick("p224r63_1988_masked.grd")
+l1988
+
+par(mfrow=c(2,1))
+plotRGB(l1988, r=4, g=3, b=2, stretch="lin")
+plotRGB(l2011, r=4, g=3, b=2, stretch="lin")
+
+dev.off()
