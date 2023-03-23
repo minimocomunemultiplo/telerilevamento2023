@@ -55,7 +55,7 @@ dev.off()
 clg <- colorRampPalette(c("dark green", "green", "light green")) (100)
 plot(l2011$B2_sre, col=clg)
 
-# Multiframe lets you split the view on a single window, so you can compare more things at once.
+# Multiframe lets you split the view on a single window, so you can compare more things at once = MULTIFRAME
 par(mfrow=c(1,2))
 plot(l2011$B1_sre, col=clb)
 plot(l2011$B2_sre, col=clg)
@@ -107,5 +107,24 @@ l1988
 par(mfrow=c(2,1))
 plotRGB(l1988, r=4, g=3, b=2, stretch="lin")
 plotRGB(l2011, r=4, g=3, b=2, stretch="lin")
-
 dev.off()
+
+
+
+# Exercise: plot the NIR band
+# plot(l2011$B4_sre)
+# dev.off()
+# You have to think that RGB uses R, G and B colors to plot the bands you give. So if at R you give the 4th band (NIR), all the infrared
+# will be depicted using R, red. If you give to R the band of red (1) so it will plot in red what is red.
+# plotRGB(l2011, r=4, g=3, b=2, stretch="lin")
+# plotRGB(l2011, r=3, g=2, b=4, stretch="lin")
+
+
+# Build a multiframe with 2 rows and 2 cols where 1:1988 LIN, 2:2011 LIN, 3:1988 HIST, 4:2011 HIST.
+par(mfrow=c(2,2))
+plotRGB(l1988, r=4, g=2, b=1, stretch="lin")
+plotRGB(l2011, r=4, g=2, b=1, stretch="lin")
+plotRGB(l1988, r=4, g=2, b=1, stretch="hist")
+plotRGB(l2011, r=4, g=2, b=1, stretch="hist")
+dev.off()
+
