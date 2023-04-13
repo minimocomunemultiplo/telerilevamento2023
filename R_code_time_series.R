@@ -57,3 +57,21 @@ plot(TGr, col=cl)
 levelplot(TGr,col.regions=cl, main="LST variation in time",
            names.attr=c("July 2000","July 2005", "July 2010", "July 2015"))
 dev.off()
+
+
+# This net exercise will rely on the raster images of folder EN, reporting the quality of air in northern Italy during lockdown (by analyzing levels of N oxides)
+
+setwd("C:/lab/EN") # Windows
+
+# Let's find, order and regroup our files
+en_list <- list.files(pattern="EN")
+en_list
+
+en_import <- lapply(en_list,raster)
+en_import
+
+EN <- stack(en_import)
+EN
+plot(EN)
+
+dev.off()
