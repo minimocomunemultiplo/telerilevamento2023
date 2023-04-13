@@ -59,9 +59,14 @@ levelplot(TGr,col.regions=cl, main="LST variation in time",
 dev.off()
 
 
-# This net exercise will rely on the raster images of folder EN, reporting the quality of air in northern Italy during lockdown (by analyzing levels of N oxides)
+# This net exercise will rely on the raster images of folder EN, reporting the quality of air in northern Italy during lockdown.
 
 setwd("C:/lab/EN") # Windows
+
+# importing one file, use raster if it is a single file
+EN_0001<-raster("EN_0001.png")
+cl2 <- colorRampPalette(c("red","orange","yellow"))(100)
+plot(EN_0001, col=cl2)
 
 # Let's find, order and regroup our files
 en_list <- list.files(pattern="EN")
@@ -73,5 +78,26 @@ en_import
 EN <- stack(en_import)
 EN
 plot(EN)
+plot(EN, col=cl2)
 
+# let's check the imported pic with the first element of the stack: we need them to be the same.
+par(mfrow=c(1,2))
+plot(EN_0001, col=cl2)
+plot(EN[[1]], col=cl2)
+
+# another way to check is by making a difference between the two pics, if values are 0,0 then they're the same
+en_check <- EN[[1]]-EN_0001
+plot(en_check) #let's plot it with standard colors. If the whole picture is 0 then it should result of the color for "0" value-
 dev.off()
+
+
+# First and last data
+par(mfrow=c(1,2))
+plot(EN[[1]])
+plot(EN[[13]])
+dev.off()
+
+diff_EN <- EN[[1]]-EN[[13]]
+diff_EN
+plot(diff_EN, col=cl)
+plotRGB(EN, 1,7,13, stretch="lin")
