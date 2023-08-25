@@ -1,0 +1,335 @@
+############################################# SET UP SECTION ############################################
+
+# Hi, in this program I will elaborate some image data recovered from Sentinel and Landsat satellites. Let's start by setting the required
+# packages for our work.
+
+setwd("C:/Progetto Remote Sensing")
+
+install.packages("ggplot2")
+install.packages("raster")
+install.packages("rasterVis")
+install.packages("rgdal")
+library(raster)
+library(rasterVis)
+library(rgdal)
+library(ggplot2)
+
+
+############################################# IMPORT AND SWIR1 PLOT SECTION ############################################
+
+# In this first "import section" we will provide groups for all band files for each year
+
+rlist <- list.files(pattern="IC2023_") # rlist let's us take all files with a certain name.
+import <- lapply(rlist,raster) # lapply applies a function (in this case raster) to all elements from rlist.
+IC23 <- stack(import) # stack function puts files imported as raster in one variable (memory reference) in R.
+IC23 #let's show our result: 
+
+  ## class      : RasterStack 
+  ## dimensions : 8281, 8231, 68160911, 6  (nrow, ncol, ncell, nlayers)
+  ## resolution : 30, 30  (x, y)
+  ## extent     : 439185, 686115, 6998085, 7246515  (xmin, xmax, ymin, ymax)
+  ## crs        : +proj=utm +zone=27 +datum=WGS84 +units=m +no_defs 
+  ## names      : IC2023_B2, IC2023_B3, IC2023_B4, IC2023_B5, IC2023_B6, IC2023_B7
+
+# IMPORTANT: B2=BLUE, B3=GREEN, B4=RED, B5=NIR, B6=SWIR1, B7=SWIR2.
+
+# Let's do the same for all other 6 years taken into account. You don't need to worry about renaming "rlist" and "import" variables
+# as they will change gradually, storing the right results into each year variable.
+
+rlist <- list.files(pattern="IC2022_")
+import <- lapply(rlist,raster)
+IC22 <- stack(import)
+IC22
+
+rlist <- list.files(pattern="IC2020_")
+import <- lapply(rlist,raster)
+IC20 <-stack(import)
+IC20
+
+rlist <-list.files(pattern="IC2018_")
+import <- lapply(rlist,raster)
+IC18 <- stack(import)
+IC18
+
+rlist <- list.files(pattern="IC2014_")
+import <- lapply(rlist,raster)
+IC14 <- stack(import)
+IC14
+
+rlist <- list.files(pattern="IC2013_")
+import <- lapply(rlist,raster)
+IC13 <- stack(import)
+IC13
+
+# Let's look for ice by using a RGB plots, coloring SWIR1 reflectance in red, and green and blue reflectance in their native colors.
+# Let's create a layout hosting all plots in order, so that we can compare them and already see some evidence of change. 
+# Snow has a powerful reflectance for near infra red, but an incredible absorption for short wave infrared. So let's use this last band 
+# for the red color, and let's keep the green and blue, which are very reflected by snow. This way we can really distinguish
+# the snowy and icy areas from the land-vegetation cover and water. In fact water will absorb the lower frequencies (such as red and infra
+# reds), and the vegetation will reflect near infrared, but absorb the blue.
+
+par(mfrow = c(2, 3)) # Our layout hosts six plots arranged in 2 rows and 3 columns.
+plotRGB(IC13, r=5, g=2, b=1, stretch="lin") 
+plotRGB(IC14, r=5, g=2, b=1, stretch="lin")
+plotRGB(IC18, r=5, g=2, b=1, stretch="lin")
+plotRGB(IC20, r=5, g=2, b=1, stretch="lin")
+plotRGB(IC22, r=5, g=2, b=1, stretch="lin")
+plotRGB(IC23, r=5, g=2, b=1, stretch="lin")
+dev.off() # This function resets the layout.
+
+
+############################################# NDSI SECTION ############################################
+
+# Now let's calculate our NDSI (normalized difference snow index), using a simple formula: (Bg - Bswir / Bg + Bswir), ranging thus 
+# from -1 to +1. Ice strongly absorbs SWIR1 wavelengths, and strongly reflects green wavelength. So making a difference between these
+# two bands, will help us improve to delineate ice, distinguishing it from things that also reflect NIR and such wavelengths (so we
+# are technically sharpening the work we did just before with NIR, which is also reflected by vegetation and this could compromise
+# the results). NDSI CALCULATION METHOD ACCORDING TO WHAT IS PRESENTED IN THIS ARTICLE https://arxiv.org/pdf/2107.05574.pdf .
+
+NDSI13 <- (IC13$IC2013_B3 - IC13$IC2013_B6)/(IC13$IC2013_B3 + IC13$IC2013_B6)
+NDSI13
+NDSI14 <- (IC14$IC2014_B3 - IC14$IC2014_B6)/(IC14$IC2014_B3 + IC14$IC2014_B6)
+NDSI14
+NDSI18 <- (IC18$IC2018_B3 - IC18$IC2018_B6)/(IC18$IC2018_B3 + IC18$IC2018_B6)
+NDSI18
+NDSI20 <- (IC20$IC2020_B3 - IC20$IC2020_B6)/(IC20$IC2020_B3 + IC20$IC2020_B6)
+NDSI20
+NDSI22 <- (IC22$IC2022_B3 - IC22$IC2022_B6)/(IC22$IC2022_B3 + IC22$IC2022_B6)
+NDSI22
+NDSI23 <- (IC23$IC2023_B3 - IC23$IC2023_B6)/(IC23$IC2023_B3 + IC23$IC2023_B6)
+NDSI23
+
+
+# Let's make a color palette for coloring the ice/snow cover in a clean way from the rest. 
+
+icecol <- colorRampPalette(c("black","red","cadetblue1","white")) (6) # We don't want many shades, as we need sharp borders.
+
+par(mfrow = c(2,3), bg="gray") # Let's plot all snow indexes
+plot(NDSI13, col= icecol)
+plot(NDSI14, col= icecol)
+plot(NDSI18, col= icecol)
+plot(NDSI20, col= icecol)
+plot(NDSI22, col= icecol)
+plot(NDSI23, col= icecol)
+dev.off()
+
+
+## LET'S NOW CLEAN UP ALL MEMORY. THEN WE WILL RESTORE THE NEEDED VARIABLES.
+
+rm(list = ls()) # First off, we'll remove all variables created so far, so we free up some space.
+
+rlist <- list.files(pattern="IC2023_") # Now we recall what we'll need.
+import <- lapply(rlist,raster)
+IC23 <- stack(import)
+IC23
+
+rlist <- list.files(pattern="IC2013_")
+import <- lapply(rlist,raster)
+IC13 <- stack(import)
+IC13
+
+NDSI13 <- (IC13$IC2013_B3 - IC13$IC2013_B6)/(IC13$IC2013_B3 + IC13$IC2013_B6)
+NDSI13
+NDSI23 <- (IC23$IC2023_B3 - IC23$IC2023_B6)/(IC23$IC2023_B3 + IC23$IC2023_B6)
+NDSI23
+icecol <- colorRampPalette(c("black","red","cadetblue1","white")) (6)
+
+# The two raster aren't exactly of the same dimensions. We can re-sample them, using a standard (NDSI23) and applying its dimensions
+# to the other (NDSI13). This isn't strictly necessary, but for this plot, we will do it.
+
+NDSI13_res <- resample(NDSI13, NDSI23, method="bilinear")
+NDSI_diff_res <- NDSI13_res-NDSI23 # Let's store the re-sampled difference in a dedicated variable.
+NDSI_diff_res
+
+# PLOT THE NDSI DIFFERENCE NOW
+
+icecoldiff <- colorRampPalette(c("white","yellow","blue","black")) (17) 
+# par(bty = "n") # This function is used to remove the black frame around the picture in the plot
+plot(NDSI_diff_res, col = icecoldiff, 
+     legend = FALSE,
+     main = "Difference in snow cover between 2013 and 2023", 
+     xaxt = "n", yaxt = "n")
+legend("bottomleft", 
+       legend = c("Covered in 2023", "Covered in 2013", "Covered in both years"), 
+       col = c("yellow", "blue", "gray"), 
+       lwd = 4,
+       cex = 0.8)
+# par(bty = "o") # This function is used to remove the black frame around the picture in the plot
+dev.off()
+
+# MAKE CLASSES AND PLOT WHERE IT HAS INCREASED/DECREASED
+set.seed(100)
+# Define breaks for discrete classes
+min_value <- minValue(NDSI_diff_res)
+max_value <- maxValue(NDSI_diff_res)
+breaks <- c(min_value - 0.5, -0.25, 0.25, max_value + 0.5)
+# Define class names
+class_names <- c("Decreased Snow", "Equal Snow", "Increased Snow")
+# Cut NDSI difference into discrete classes
+class_values <- cut(NDSI_diff_res[], breaks = breaks, labels = class_names, include.lowest = TRUE)
+# Create a new raster layer with classified values
+classified_raster <- NDSI_diff_res
+classified_raster[] <- as.integer(class_values)
+# Plot the classified raster with a color scale
+num_classes <- length(class_names)
+
+par(bg="gray") # PLOTTING THE RESULT
+plot(classified_raster, col = icecoldiff, main = "NDSI Difference Classification",
+     legend = FALSE, 
+     xaxt = "n", yaxt = "n")
+legend("bottomleft", 
+       legend = c(class_names), 
+       col = c("black", "dark gray", "white"), 
+       lwd = 4,
+       cex = 0.8)
+dev.off()
+
+summary(NDSI_diff_res)
+
+# Count the number of cells in each class
+class_counts <- table(as.factor(classified_raster[]))
+# Calculate total number of cells
+total_cells <- ncell(classified_raster)
+# Calculate percentages
+percent_increased_snow <- (class_counts["Increased Snow"] / total_cells) * 100
+percent_decreased_snow <- (class_counts["Decreased Snow"] / total_cells) * 100
+# Print the percentages
+cat("Percentage of Increased Snow:", percent_increased_snow, "%\n")
+cat("Percentage of Decreased Snow:", percent_decreased_snow, "%\n")
+
+############################################# NBSI-MS CALCULATION SECTION ############################################
+
+# So, as we said, we want to clean our data from water areas and cloud cover. How can we avoid mistaking ice for any of these?
+# We can use a solution reported in the following article https://arxiv.org/pdf/2107.05574.pdf . We will use a NON-BINARY
+# SNOW INDEX FOR MULTI COMPONENT SURFACES (NDSI-MS). It consists in applying a mask that lets us separate better the other surfaces
+# from ice and snow (called LCTs mask). It uses a constant "k" (taken from the article) that enhances even more this separation. Beware, 
+# I hid the sequences between 2014 and 2022, because we actually used them as extra material, but the real difference will be between the 
+# extreme years.
+
+
+NBSI_MS_13 <- (0.36*(IC13$IC2013_B3 + IC13$IC2013_B4 + IC13$IC2013_B5)) -
+  (((IC13$IC2013_B2 + IC13$IC2013_B7)/IC13$IC2013_B3) + IC13$IC2013_B6)
+NBSI_MS_13
+
+  ## class      : RasterLayer 
+  ## dimensions : 7871, 8081, 63605551  (nrow, ncol, ncell)
+  ## resolution : 30, 30  (x, y)
+  ## extent     : 446985, 689415, 7004385, 7240515  (xmin, xmax, ymin, ymax)
+  ## crs        : +proj=utm +zone=27 +datum=WGS84 +units=m +no_defs 
+  ## source     : r_tmp_2023-08-22_154301_23900_60466.grd 
+  ## names      : layer 
+  ## values     : -13718.72, 58399.59  (min, max)
+
+NBSI_MS_23 <- (0.36*(IC23$IC2023_B3 + IC23$IC2023_B4 + IC23$IC2023_B5)) -
+  (((IC23$IC2023_B2 + IC23$IC2023_B7)/IC23$IC2023_B3) + IC23$IC2023_B6)
+NBSI_MS_23
+
+  ## class      : RasterLayer 
+  ## dimensions : 8281, 8231, 68160911  (nrow, ncol, ncell)
+  ## resolution : 30, 30  (x, y)
+  ## extent     : 439185, 686115, 6998085, 7246515  (xmin, xmax, ymin, ymax)
+  ## crs        : +proj=utm +zone=27 +datum=WGS84 +units=m +no_defs 
+  ## source     : memory
+  ## names      : layer 
+  ## values     : -16638.84, 58601.39  (min, max)
+
+# YEARS IN BETWEEN HAVE BEEN HIDDEN FOR THEY WON'T BE USED, BUT THE FORMULAS ARE THESE BELOW
+
+#NBSI_MS_14 <- (0.36*(fullband_IC14$IC2014_B3 + fullband_IC14$IC2014_B4 + fullband_IC14$IC2014_B5)) -
+#  (((fullband_IC14$IC2014_B2 + fullband_IC14$IC2014_B7)/fullband_IC14$IC2014_B3) + fullband_IC14$IC2014_B6)
+#NBSI_MS_14
+
+#NBSI_MS_18 <- (0.36*(fullband_IC18$IC2018_B3 + fullband_IC18$IC2018_B4 + fullband_IC18$IC2018_B5)) -
+#  (((fullband_IC18$IC2018_B2 + fullband_IC18$IC2018_B7)/fullband_IC18$IC2018_B3) + fullband_IC18$IC2018_B6)
+#NBSI_MS_18
+
+#NBSI_MS_20 <- (0.36*(fullband_IC20$IC2020_B3 + fullband_IC20$IC2020_B4 + fullband_IC20$IC2020_B5)) -
+#  (((fullband_IC20$IC2020_B2 + fullband_IC20$IC2020_B7)/fullband_IC20$IC2020_B3) + fullband_IC20$IC2020_B6)
+#NBSI_MS_20
+
+#NBSI_MS_22 <- (0.36*(fullband_IC22$IC2022_B3 + fullband_IC22$IC2022_B4 + fullband_IC22$IC2022_B5)) -
+#  (((fullband_IC22$IC2022_B2 + fullband_IC22$IC2022_B7)/fullband_IC22$IC2022_B3) + fullband_IC22$IC2022_B6)
+#NBSI_MS_22
+
+
+# Let's plot these results altogether using a very exclusive palette, showing in black non-snow and in white snow cover. 
+
+bw <- colorRampPalette(c("black","white")) (2) 
+par(mfrow = c(1,2), bg = "gray")
+plot(NBSI_MS_13, col = bw,
+     legend = FALSE,
+     main = "NBSI-MS 2013", 
+     xaxt = "n", yaxt = "n")
+legend("bottomleft", 
+       legend = c("Snow present", "Snow absent"), 
+       col = c("white", "black"), 
+       lwd = 4,
+       cex = 0.8)
+# plot(NBSI_MS_14, col = bw)
+# plot(NBSI_MS_18, col = bw)
+# plot(NBSI_MS_20, col = bw)
+# plot(NBSI_MS_22, col = bw)
+plot(NBSI_MS_23, col = bw,
+     legend = FALSE,
+     main = "NBSI-MS 2023", 
+     xaxt = "n", yaxt = "n")
+legend("bottomleft", 
+       legend = c("Snow present", "Snow absent"), 
+       col = c("white", "black"), 
+       lwd = 4,
+       cex = 0.8)
+dev.off()
+
+############################################# NBSI-MS DIFFERENCE SECTION ############################################
+
+
+# Now we will first re-sample NDSI_MS_13 (to NDSI_MS_23), calculate the difference between NBSI 2013 and NBSI 2023 and plot it (part 1), 
+# then normalize the range between -1 and 1 (part 2). We will finally plot the result, according to a new dedicated color palette.
+
+# PART 1, RE-SAMPLING AND DIFF CALCULATION, THEN NON-NORMALIZED DATA PLOT
+
+NBSI_MS_13_res <- resample(NBSI_MS_13, NBSI_MS_23, method="bilinear")
+NBSI_MS_diff_res <- NBSI_MS_13_res - NBSI_MS_23 # Let's store the re-sampled difference in a dedicated variable.
+NBSI_MS_diff_res
+
+icecoldiff_MS <- colorRampPalette(c("orange","white","blue")) (100)
+par(bg = "gray")
+plot(NBSI_MS_diff_res, col = icecoldiff_MS,
+     legend = FALSE,
+     main = "NBSI-MS 2023", 
+     xaxt = "n", yaxt = "n")
+legend("bottomleft", 
+       legend = c("Covered in 2023", "Covered in 2013", "Covered in both years"),
+       col = c("orange", "blue", "white"), 
+       lwd = 4,
+       cex = 0.8)
+dev.off()
+
+# PART 2, NORMALIZATION -1 TO 1 OF ALL THREE RASTER FILES AND COMPARISON PLOT
+
+min_val13 <- minValue(NBSI_MS_13_res)
+max_val13 <- maxValue(NBSI_MS_13_res)
+N_NBSI_MS_13_res <- ((NBSI_MS_13_res - min_val13) / (max_val13 - min_val13)) * 2 - 1
+N_NBSI_MS_13_res
+
+min_val23 <- minValue(NBSI_MS_23)
+max_val23 <- maxValue(NBSI_MS_23)
+N_NBSI_MS_23 <- ((NBSI_MS_23 - min_val23) / (max_val23 - min_val23)) * 2 - 1
+N_NBSI_MS_23
+
+min_val <- minValue(NBSI_MS_diff_res)
+max_val <- maxValue(NBSI_MS_diff_res)
+N_NBSI_MS_diff_res <- ((NBSI_MS_diff_res - min_val) / (max_val - min_val)) * 2 - 1
+N_NBSI_MS_diff_res
+
+icecol_MS <- colorRampPalette(c("red","white","blue")) (100)
+par(mfrow = c(2,2)) # create a layout showing the three plots together and then plot them
+par(bty = "n")
+plot(N_NBSI_MS_13_res, col = icecol_MS, main = "NBSI-MS 2013 snow cover",
+                    xaxt = "n", yaxt = "n")
+plot(N_NBSI_MS_23, col = icecol_MS, main = "NBSI-MS 2023 snow cover",
+                    xaxt = "n", yaxt = "n")
+plot(N_NBSI_MS_diff_res, col = icecoldiff_MS, main = "NBSI-MS Snow cover difference",
+                      xaxt = "n", yaxt = "n")
+par(bty = "o")
+dev.off()
