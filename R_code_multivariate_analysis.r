@@ -1,5 +1,5 @@
-install.packages(raster)
-install.packages(ggplot2)
+install.packages("raster")
+install.packages("ggplot2")
 library(raster)
 library(ggplot2)
 
