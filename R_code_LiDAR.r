@@ -1,4 +1,8 @@
 # Load needed packages
+install.packages("raster")
+install.packages("rgdal")
+install.packages("viridis")
+install.packages("ggplot2")
 library(raster) #"Geographic Data Analysis and Modeling"
 library(rgdal) #"Geospatial Data Abstraction Library"
 library(viridis)
