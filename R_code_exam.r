@@ -16,6 +16,9 @@ install.packages("rgdal")
 install.packages("viridis")
 install.packages("patchwork")
 install.packages("gridExtra")
+install.packages("vctrs")
+install.packages("caret")
+library(caret)
 library(raster)
 library(ggplot2)
 library(viridis)
@@ -46,7 +49,6 @@ S_IC18 <- crop(S_IC18,ext)
 
 S_IC23
 S_IC18
-
 
 ## S_IC23
 ## class      : RasterBrick 
@@ -206,7 +208,6 @@ NDSI_diff_n <- (NDSI_diff - NDSI_diff_min) / (NDSI_diff_max - NDSI_diff_min) * 2
 
 ## Plot the results together
 
-icecol <- colorRampPalette(c("black","red","cadetblue1","white")) (100)
 par(mfrow = c(1,3), bg="gray",bty = "n",oma = c(0, 0, 2, 0), bg = "gray") # Let's plot all snow indexes
 plot(NDSI18_n, col= icecol2,
      main = "NDSI 2018",
@@ -301,6 +302,9 @@ pc_final <- as.data.frame(pci[[1]], xy=T)
 ggplot() + 
   geom_raster(pc_final, mapping = aes(x = x, y = y, fill = PC1)) + 
   scale_fill_viridis(option="inferno")
+
+## The ggplot visualization helps to understand how the variation captured by the first principal 
+# component is distributed across the study area, based on the differences in the input indices.
 
 
 # My PCA looks like it's saying that where the values go very low, the situation in terms of snow cover really changed. As values
@@ -424,4 +428,3 @@ categories <- c("2018", "2023", "diff")
 barplot(values, names.arg = categories, main = "Means between values of N-RC and values of NBSI-MS-RC", 
         xlab = "years", ylab = "% snow",ylim = c(0, 100))
 text(x = 1:length(values), y = values + 2, labels = values, pos = 3)
-
