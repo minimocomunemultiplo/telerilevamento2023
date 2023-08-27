@@ -1,9 +1,8 @@
-############################################# SET UP SECTION ############################################
-
 # Hi, in this program I will elaborate some image data recovered from Sentinel satellite. The whole analysis consists of comparing two 
-# Sentinel 2A pictures of Iceland (2018 and 2023), to see if the glacier extension has changed over the course of 5 years for the month of 
-# April. Recently, many volcano eruptions (2021-2023) have happened on the southern part of this island, and I was interested in checking
-# the ice-cover situation.
+# Sentinel 2A pictures of Iceland, to see if the glacier extension has changed over the course of 5 years (2018-2023) for the month of 
+# April. The reason for is investigating the influence of the recent Volcano eruption (2021-2023) and their impact on snow/ice cover.
+
+############################################# SET UP SECTION ############################################
 
 # Let's start by setting the required packages for our work.
 
@@ -16,6 +15,7 @@ install.packages("rgdal")
 install.packages("viridis")
 install.packages("patchwork")
 install.packages("gridExtra")
+library(RStoolbox)
 library(raster)
 library(ggplot2)
 library(viridis)
@@ -46,6 +46,7 @@ S_IC18 <- crop(S_IC18,ext)
 
 S_IC23
 S_IC18
+
 
 ## S_IC23
 ## class      : RasterBrick 
@@ -99,7 +100,7 @@ dev.off()
 ############################################# S3 INDEX SECTION ############################################
 
 # Saito and Yamazaki proposed S3 as an improved snow mapping indices in 1999 at the same time as when NDSI was developed. In 2006, 
-# Shimamura assessed the accuracy of S3 over NDSI, specifically in the areas where snow cover and forested areas overlapped each 
+# Shimamura [38] assessed the accuracy of S3 over NDSI, specifically in the areas where snow cover and forested areas overlapped each 
 # other (cfr. https://www.mdpi.com/2072-4292/11/23/2774)
 
 S3_18 <- ((S_IC18[[6]]*(S_IC18[[3]]-S_IC18[[4]])))/((S_IC18[[6]]+S_IC18[[3]])*(S_IC18[[6]]+S_IC18[[4]]))
@@ -119,14 +120,19 @@ S3_diff_n <- (S3_diff - S3_diff_min) / (S3_diff_max - S3_diff_min) * 2 - 1
 
 ## Let's plot all results
 
+icecol2 <- colorRampPalette(c("black","red","blue","white")) (100)
+
 par(mfrow = c(1, 3), bty = "n",oma = c(0, 0, 2, 0), bg = "gray")
 plot(S3_18_n,
+     col = icecol2,
      main = "S3 2018",
      xaxt = "n", yaxt = "n")
 plot(S3_23_n,
+     col = icecol2,
      main = "S3 2023",
      xaxt = "n", yaxt = "n")
 plot(S3_diff_n,
+     col = icecol2,
      main = "S3 diff",
      xaxt = "n", yaxt = "n")
 mtext("S3 index", outer = TRUE, cex = 1.5)
@@ -155,12 +161,15 @@ SWI_diff_n <- (SWI_diff - SWI_diff_min) / (SWI_diff_max - SWI_diff_min) * 2 - 1
 
 par(mfrow = c(1, 3), bty = "n",oma = c(0, 0, 2, 0), bg = "gray")
 plot(SWI_18_n,
+     col = icecol2,
      main = "SWI 2018",
      xaxt = "n", yaxt = "n")
 plot(SWI_23_n,
+     col = icecol2,
      main = "SWI 2023",
      xaxt = "n", yaxt = "n")
 plot(SWI_diff_n,
+     col = icecol2,
      main = "SWI diff",
      xaxt = "n", yaxt = "n")
 mtext("SWI index", outer = TRUE, cex = 1.5)
@@ -199,13 +208,13 @@ NDSI_diff_n <- (NDSI_diff - NDSI_diff_min) / (NDSI_diff_max - NDSI_diff_min) * 2
 
 icecol <- colorRampPalette(c("black","red","cadetblue1","white")) (100)
 par(mfrow = c(1,3), bg="gray",bty = "n",oma = c(0, 0, 2, 0), bg = "gray") # Let's plot all snow indexes
-plot(NDSI18_n, col= icecol,
+plot(NDSI18_n, col= icecol2,
      main = "NDSI 2018",
      xaxt = "n", yaxt = "n")
-plot(NDSI23_n, col= icecol,
+plot(NDSI23_n, col= icecol2,
      main = "NDSI 2023",
      xaxt = "n", yaxt = "n")
-plot(NDSI_diff_n, col= icecol,
+plot(NDSI_diff_n, col= icecol2,
      main = "NDSI difference",
      xaxt = "n", yaxt = "n")
 mtext("NDSI index", outer = TRUE, cex = 1.5)
@@ -243,7 +252,6 @@ NBSI_MS_diff_n <- (NBSI_MS_diff - NBSI_MS_diff_min) / (NBSI_MS_diff_max - NBSI_M
 
 # See the difference? 
 
-icecol2 <- colorRampPalette(c("black","red","blue","white")) (100)
 par(mfrow = c(1,3), bg="gray",bty = "n",oma = c(0, 0, 2, 0), bg = "gray") # Let's plot all snow indexes
 plot(NBSI_MS_18_n,
      col = icecol2,
@@ -344,10 +352,6 @@ percentages2 # percent snow 2023: 24,33 %
 
 ############################################# CLASSIFICATION ON NBSI-MS SECTION ############################################
 
-# Here I am trying to classify starting from the NBSI-MS difference for both years. I want to see how this process will classify
-# and count the pixels I have for each class. If better or worse. I will eventually make a mean of the results of both 
-# classifications 
-
 singlenr <- getValues(NBSI_MS_diff_n)
 singlenr
 set.seed(99)
@@ -411,16 +415,13 @@ tot5 = ncell(NBSI_diff_class)
 percentages5 = frequencies5 * 100 /  tot5
 percentages5 # decrease in snow cover: 64,83 %
 
-# Calculate now the mean of the percentages shown for each year and their difference
-
 mean_snow_18 <- (78.78 + 79.10)/2
 mean_snow_23 <- (24.33 + 22.93)/2
 mean_snowdiff <- ((78.78-24.33) + (64.83))/2
-
-# Let's make a barplot showing the percentages of the results together 
 
 values <- c(mean_snow_18, mean_snow_23, mean_snowdiff)
 categories <- c("2018", "2023", "diff")
 barplot(values, names.arg = categories, main = "Means between values of N-RC and values of NBSI-MS-RC", 
         xlab = "years", ylab = "% snow",ylim = c(0, 100))
 text(x = 1:length(values), y = values + 2, labels = values, pos = 3)
+
