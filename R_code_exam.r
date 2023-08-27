@@ -99,7 +99,7 @@ dev.off()
 ############################################# S3 INDEX SECTION ############################################
 
 # Saito and Yamazaki proposed S3 as an improved snow mapping indices in 1999 at the same time as when NDSI was developed. In 2006, 
-# Shimamura [38] assessed the accuracy of S3 over NDSI, specifically in the areas where snow cover and forested areas overlapped each 
+# Shimamura assessed the accuracy of S3 over NDSI, specifically in the areas where snow cover and forested areas overlapped each 
 # other (cfr. https://www.mdpi.com/2072-4292/11/23/2774)
 
 S3_18 <- ((S_IC18[[6]]*(S_IC18[[3]]-S_IC18[[4]])))/((S_IC18[[6]]+S_IC18[[3]])*(S_IC18[[6]]+S_IC18[[4]]))
