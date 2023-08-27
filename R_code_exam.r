@@ -1,8 +1,9 @@
 ############################################# SET UP SECTION ############################################
 
 # Hi, in this program I will elaborate some image data recovered from Sentinel satellite. The whole analysis consists of comparing two 
-# Sentinel 2A pictures of Iceland, to see if the glacier extension has changed over the course of 5 years (2018-2023) for the month of 
-# April. The reason for is investigating the influence of the recent Volcano eruption (2021-2023) and their impact on snow/ice cover. 
+# Sentinel 2A pictures of Iceland (2018 and 2023), to see if the glacier extension has changed over the course of 5 years for the month of 
+# April. Recently, many volcano eruptions (2021-2023) have happened on the southern part of this island, and I was interested in checking
+# the ice-cover situation.
 
 # Let's start by setting the required packages for our work.
 
