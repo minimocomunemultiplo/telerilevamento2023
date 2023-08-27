@@ -8,6 +8,7 @@
 
 setwd("C:/Progetto Remote Sensing/sentinel data")
 
+install.packages("Rtools")
 install.packages("ggplot2")
 install.packages("raster")
 install.packages("rasterVis")
@@ -15,7 +16,6 @@ install.packages("rgdal")
 install.packages("viridis")
 install.packages("patchwork")
 install.packages("gridExtra")
-library(RStoolbox)
 library(raster)
 library(ggplot2)
 library(viridis)
