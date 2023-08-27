@@ -2,7 +2,7 @@
 
 # set up your libraries
 
-install.packages(raster)
+install.packages("raster")
 library(raster)
 install.packages("ncdf4")
 library(ncdf4)
