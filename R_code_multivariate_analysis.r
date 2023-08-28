@@ -24,13 +24,14 @@ pairs(sen2) # Used to create scatterplot matrices (for rasters, it would be bett
 sample <- sampleRandom(sen2, 10000)
 pca <- prcomp(sample)
 
-# variance explained
+# variance explained. The summary gives back the content of pca (or of the variable we stick in)
 summary(pca)
 
 # correlation with original bands
 pca
 
-# pc map
+# pc map. Predict the principal components of sen2 raster using "pca" model from indexes 1 to 2. 
+# So it becomes pc1 = predicted principal components
 pci <- predict(sen2, pca, index=c(1:2))
 
 plot(pci[[1]])
