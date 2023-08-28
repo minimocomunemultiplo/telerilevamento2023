@@ -27,10 +27,10 @@ species$Occurrence
 plot(species[species$Occurrence == 1,],col='blue',pch=16) # plot the occurrence of that species when it is 1 in blue
 points(species[species$Occurrence == 0,],col='red',pch=16) # plot the occurrence of that species when it is 0 in red
 
-# predictors: look at the path
+# predictors: look at the path given by the function system.file and store it.
 path <- system.file("external", package="sdm")
 
-# list the predictors
+# list the predictors. It's easier now because you can use the "path" stored before.
 lst <- list.files(path=path,pattern='asc$',full.names = T) #
 lst
 
@@ -39,11 +39,12 @@ preds <- stack(lst)
 
 # plot preds variable
 cl <- colorRampPalette(c('blue','orange','red','yellow')) (100)
-plot(preds, col=cl)
+plot(preds, col=cl) # so far it's been done as we've seen for raster stacks and stack plotting
 
 # plot predictors and occurrences
 plot(preds$elevation, col=cl)
-points(species[species$Occurrence == 1,], pch=16)
+points(species[species$Occurrence == 1,], pch=16) # this shows the species where the occurrence is 1 as points together 
+# with the plot of the elevation attribute for the preds stack. Same does further on for other elements.
 
 plot(preds$temperature, col=cl)
 points(species[species$Occurrence == 1,], pch=16)
