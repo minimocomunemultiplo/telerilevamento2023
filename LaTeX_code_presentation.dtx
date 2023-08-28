@@ -1,4 +1,5 @@
 % Presentation for the R_code_exam.r file
+
 \documentclass{beamer}
 
 \usepackage{graphicx} % for pics
@@ -28,16 +29,16 @@
 
 \begin{frame}{What's the matter?}
 \begin{itemize}
-    \item SENTINEL2 PICTURES (2018-2019)
-    \item ICE/SNOW COVER INDEX
-    \item CHANGES IN ICE COVER?
+    \item SENTINEL2 PICTURES (2018-2019)\\[20pt]
+    \item ICE/SNOW COVER INDEX\\[20pt]
+    \item CHANGES IN ICE COVER?\\[50pt]
     \end{itemize}
-\textit{(Yes I've been to Iceland, and yes there where many active volcano sites!)}
+\tiny\textit{(Yes I've been to Iceland, and yes there where many active volcano sites!)}
 \end{frame}
 
 \begin{frame}{What's the tool?}
 \begin{itemize}
-    \item R coding
+    \item R coding\\[20pt]
 \end{itemize}
 Here I provide you the link to the script: \\
 \parbox{\textwidth}{\raggedright
@@ -51,10 +52,10 @@ Here I provide you the link to the script: \\
 
 \begin{frame}{What's the code?}
 \begin{itemize}
-    \item \textcolor{red}{SET UP SECTION}
-    \item \textcolor{orange}{IMPORT DATA, CROP AND PLOT}
-    \item \textcolor{green}{INDEX CALCULATION}
-    \item \textcolor{pink}{PCA}
+    \item \textcolor{red}{SET UP SECTION}\\[20pt]
+    \item \textcolor{orange}{IMPORT DATA, CROP AND PLOT}\\[20pt]
+    \item \textcolor{green}{INDEX CALCULATION}\\[20pt]
+    \item \textcolor{pink}{PCA}\\[20pt]
     \item \textcolor{yellow}{CLASSIFICATION}
 \end{itemize}
 \end{frame}
@@ -65,30 +66,31 @@ Here I provide you the link to the script: \\
 
 \begin{frame}{Import data}
 \frametitle{\textcolor{orange}{IMPORT DATA}}
-\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{data import.png}
-\textit{Images from Sentinel 2}
+\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{data import.png}\\[20pt]
+\textit{Images from Sentinel 2 with NIR and SWIR1 bands for red color}
 \end{frame}
 
 \begin{frame}{Index calculation}
 \frametitle{\textcolor{green}{INDEX CALCULATION}}
 \begin{itemize}
-    \item S3: \parbox[t]{\dimexpr\textwidth-\leftmargin}{\textit{\tiny In 2006, Shimamura assessed the accuracy of S3 over NDSI, specifically in the areas where snow cover and forested areas overlapped each other.}}
-    \item SWI \parbox[t]{\dimexpr\textwidth-\leftmargin}{\textit{\tiny Precise extraction and mapping of the snow-covered area in mountainous regions need proficient tools that are not affected by the other neighboring land cover variables, particularly water.}}
-    \item NDSI \parbox[t]{\dimexpr\textwidth-\leftmargin}{\textit{\tiny The classic Normalized difference snow index, as reported on most articles.}}
-    \item \underline{NBSI-MS} \parbox[t]{\dimexpr\textwidth-\leftmargin}{\textit{\tiny A new interesting index developed by Arreola-Esquivel, M. M. et al. (2021). Its aim is to calculate a very accurate snow distribution by elaborating an efficient LCTs mask that removes unimportant features. Below, its formula.}}
-\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{formula NBSI-MS.png}
+    \item S3: \parbox[t]{\dimexpr\textwidth-\leftmargin}{\textit{\tiny In 2006, Shimamura assessed the accuracy of S3 over NDSI, specifically in the areas where snow cover and forested areas overlapped each other.}}\\[10pt]
+    \item SWI \parbox[t]{\dimexpr\textwidth-\leftmargin}{\textit{\tiny Precise extraction and mapping of the snow-covered area in mountainous regions need proficient tools that are not affected by the other neighboring land cover variables, particularly water.}}\\[10pt]
+    \item NDSI \parbox[t]{\dimexpr\textwidth-\leftmargin}{\textit{\tiny The classic Normalized difference snow index, as reported on most articles.}}\\[10pt]
+    \item \underline{NBSI-MS} \parbox[t]{\dimexpr\textwidth-\leftmargin}{\textit{\tiny A new interesting index developed by Arreola-Esquivel, M. M. et al. (2021). Its aim is to calculate a very accurate snow distribution by elaborating an efficient LCTs mask that removes unimportant features. Below, its formula.}}\\[10pt]
+\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{formula NBSI-MS.png}\\[10pt]
+\tiny\textcolor{green}{All indexes were normalized -1 to 1}
 \end{itemize}
 \end{frame}
 
 \begin{frame}{NBSI-MS plot}
 \frametitle{\underline{\textcolor{black}{NBSI-MS plot}}}
-\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{nbsims.png}
+\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{nbsims.png}\\[10pt]
 \textit{\tiny As we can see there is a very clean separation of snow from the other covers. furthermore, the difference of the two rasters is very acccurate and we could classify its points very precisely to sort out how snow has changed.}
 \end{frame}
 
 \begin{frame}{NDSI plot}
 \frametitle{\textcolor{black}{NDSI plot}}
-\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{ndsi.png}
+\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{ndsi.png}\\[10pt]
 \textit{\tiny Here there is a weaker detection of snow, compared to the NBSI-MS. But it is anyway a good index on which we can base our studies.}
 \end{frame}
 
@@ -105,9 +107,9 @@ Here I provide you the link to the script: \\
 \begin{frame}{PCA}
 \frametitle{\textcolor{pink}{PCA}}
 \begin{itemize} 
-    \item  Each \textcolor{blue}{pixel color represents the value} of the first principal component (PC1) at that location.
-    \item \textcolor{blue}{Color gradient represents the variation} in the first principal component values.
-    \item \textcolor{blue}{ggplot visualization helps you understand how the variation} captured by the first principal component is distributed across the study area, based on the differences in the input indices.\\
+    \item  Each \textcolor{blue}{pixel color represents the value} of the first principal component (PC1) at that location.\\[10pt]
+    \item \textcolor{blue}{Color gradient represents the variation} in the first principal component values.\\[10pt]
+    \item \textcolor{blue}{ggplot visualization helps you understand how the variation} captured by the first principal component is distributed across the study area, based on the differences in the input indices.\\[10pt]
 \textcolor{red}{Possible interpretations:}
 \item Similarity of Indices
 \item Environmental Patterns
@@ -117,17 +119,17 @@ Here I provide you the link to the script: \\
 
 \begin{frame}{PCA}
 \frametitle{\textcolor{pink}{PCA}}
-trying to find a trend/pattern
+trying to find a trend/pattern\\[20pt]
 \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{pca plot.png}
 \end{frame}
 
 \begin{frame}{Classification}
 \frametitle{\textcolor{yellow}{CLASSIFICATION}}
 \begin{itemize}
-    \item The first classification has been set on the RasterStack made of the 6 original bands (6 layers).
-    \item A second classification has been set on the NBSI-MS raster of one layer (obtained by the interaction of all other 6 bands).
+    \item CLASSIFICATION 1. on the RasterStack made of the 6 original bands (6 layers).\\[20pt]
+    \item CLASSIFICATION 2. on the NBSI-MS raster of one layer (obtained by the interaction of all other 6 bands).\\[30pt]
 \end{itemize}
-\textcolor{red}{Two classes} each: SNOW vs NON-SNOW
+\textcolor{red}{Two classes}: SNOW vs NON-SNOW
 \end{frame}
 
 \begin{frame}{R C}
@@ -143,7 +145,7 @@ trying to find a trend/pattern
 \begin{frame}{Classification}
 \frametitle{\textcolor{yellow}{CLASSIFICATION}}
 \begin{itemize}
-    \item Eventually we can find slight differences between a classification based on NBSI-MS and on the original Raster.
+    \item Eventually we can find slight differences between a classification based on NBSI-MS and on the original Raster.\\[20pt]
     \item So I decided to calculate a mean between the percentages of the two classes (snow and non snow) of both years for a \textcolor{red}{more accurate result in snow difference}.
 \end{itemize}
 \end{frame}
@@ -158,8 +160,8 @@ trying to find a trend/pattern
 
 \begin{frame}{Conclusions}
 \begin{itemize}
-    \item \textcolor{red}{NBSI-MS index is a strong tool} to use when determining ice cover, even against cloud cover.
-    \item \textcolor{red}{PCA} result between indexes could be interpreted to find \textcolor{red}{similar patterns} for high values across the area in terms of snow cover.
+    \item \textcolor{red}{NBSI-MS index is a strong tool} to use when determining ice cover, even against cloud cover.\\[20pt]
+    \item \textcolor{red}{PCA} result between indexes could be interpreted to find \textcolor{red}{similar patterns} for high values across the area in terms of snow cover.\\[20pt]
     \item \textcolor{red}{Snow cover has decreased in the last 5 years}. This might be dued to the most recent volcano eruptions or changes in CO2 levels in atmosphere. So this results are good to be compared for further investigations.
 \end{itemize}
 \end{frame}
