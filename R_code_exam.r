@@ -8,24 +8,18 @@
 
 setwd("C:/Progetto Remote Sensing/sentinel data")
 
-install.packages("Rtools")
 install.packages("ggplot2")
 install.packages("raster")
 install.packages("rasterVis")
 install.packages("rgdal")
 install.packages("viridis")
 install.packages("patchwork")
-install.packages("gridExtra")
-install.packages("vctrs")
-install.packages("caret")
-library(caret)
 library(raster)
 library(ggplot2)
 library(viridis)
 library(patchwork)
 library(rasterVis)
 library(rgdal)
-library(gridExtra)
 
 
 ############################################# IMPORT AND PLOT SECTION ############################################
@@ -303,6 +297,8 @@ ggplot() +
   geom_raster(pc_final, mapping = aes(x = x, y = y, fill = PC1)) + 
   scale_fill_viridis(option="inferno")
 
+dev.off()
+
 ## The ggplot visualization helps to understand how the variation captured by the first principal 
 # component is distributed across the study area, based on the differences in the input indices.
 
@@ -353,6 +349,8 @@ frequencies2 <- freq(S_IC23_class)
 tot2 = ncell(S_IC23_class)
 percentages2 = frequencies2 * 100 /  tot2
 percentages2 # percent snow 2023: 24,33 %
+
+dev.off()
 
 ############################################# CLASSIFICATION ON NBSI-MS SECTION ############################################
 
@@ -423,8 +421,14 @@ mean_snow_18 <- (78.78 + 79.10)/2
 mean_snow_23 <- (24.33 + 22.93)/2
 mean_snowdiff <- ((78.78-24.33) + (64.83))/2
 
+## Here is the final barplot of the mean of ice in 2018, 2023 and their difference
+
 values <- c(mean_snow_18, mean_snow_23, mean_snowdiff)
 categories <- c("2018", "2023", "diff")
 barplot(values, names.arg = categories, main = "Means between values of N-RC and values of NBSI-MS-RC", 
         xlab = "years", ylab = "% snow",ylim = c(0, 100))
 text(x = 1:length(values), y = values + 2, labels = values, pos = 3)
+
+dev.off()
+
+## THE END
