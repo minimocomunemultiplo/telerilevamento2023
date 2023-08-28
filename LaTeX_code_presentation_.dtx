@@ -1,0 +1,171 @@
+\documentclass{beamer}
+
+\usepackage{graphicx} % for pics
+\usepackage {hyperref} % for hyeperlinks
+\usepackage{url} % for url
+\usepackage{harvard} % for layout and fonts
+\usetheme{Bergen} % this is the theme of my beamer
+
+% Use Helvetica font
+\usepackage{helvet}
+\renewcommand{\familydefault}{\sfdefault} % Set the default font to sans-serif
+
+% Set up the main
+\title{Investigating ice cover in Iceland}
+\author{Giacomo Panza}
+\date{August 2023}
+
+% Display section name in each slide with larger font
+\setbeamertemplate{headline}{\hfill\large\insertsectionhead\hspace{0.5cm}\null}
+
+\begin{document}
+\maketitle
+
+
+% First section
+\section{Introduction}
+
+\begin{frame}{What's the matter?}
+\begin{itemize}
+    \item SENTINEL2 PICTURES (2018-2019)
+    \item ICE/SNOW COVER INDEX
+    \item CHANGES IN ICE COVER?
+    \end{itemize}
+\textit{(Yes I've been to Iceland, and yes there where many active volcano sites!)}
+\end{frame}
+
+\begin{frame}{What's the tool?}
+\begin{itemize}
+    \item R coding
+\end{itemize}
+Here I provide you the link to the script: \\
+\parbox{\textwidth}{\raggedright
+\href{https://github.com/minimocomunemultiplo/telerilevamento2023}{\textit{\textcolor{red}{\textbf{GitHub Repository}}}}
+}
+\end{frame}
+
+
+% Second section
+\section{Code}
+
+\begin{frame}{What's the code?}
+\begin{itemize}
+    \item \textcolor{red}{SET UP SECTION}
+    \item \textcolor{orange}{IMPORT DATA, CROP AND PLOT}
+    \item \textcolor{green}{INDEX CALCULATION}
+    \item \textcolor{pink}{PCA}
+    \item \textcolor{yellow}{CLASSIFICATION}
+\end{itemize}
+\end{frame}
+
+
+% Third section
+\section{Data analysis}
+
+\begin{frame}{Import data}
+\frametitle{\textcolor{orange}{IMPORT DATA}}
+\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{data import.png}
+\textit{Images from Sentinel 2}
+\end{frame}
+
+\begin{frame}{Index calculation}
+\frametitle{\textcolor{green}{INDEX CALCULATION}}
+\begin{itemize}
+    \item S3: \parbox[t]{\dimexpr\textwidth-\leftmargin}{\textit{\tiny In 2006, Shimamura assessed the accuracy of S3 over NDSI, specifically in the areas where snow cover and forested areas overlapped each other.}}
+    \item SWI \parbox[t]{\dimexpr\textwidth-\leftmargin}{\textit{\tiny Precise extraction and mapping of the snow-covered area in mountainous regions need proficient tools that are not affected by the other neighboring land cover variables, particularly water.}}
+    \item NDSI \parbox[t]{\dimexpr\textwidth-\leftmargin}{\textit{\tiny The classic Normalized difference snow index, as reported on most articles.}}
+    \item \underline{NBSI-MS} \parbox[t]{\dimexpr\textwidth-\leftmargin}{\textit{\tiny A new interesting index developed by Arreola-Esquivel, M. M. et al. (2021). Its aim is to calculate a very accurate snow distribution by elaborating an efficient LCTs mask that removes unimportant features. Below, its formula.}}
+\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{formula NBSI-MS.png}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{NBSI-MS plot}
+\frametitle{\underline{\textcolor{black}{NBSI-MS plot}}}
+\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{nbsims.png}
+\textit{\tiny As we can see there is a very clean separation of snow from the other covers. furthermore, the difference of the two rasters is very acccurate and we could classify its points very precisely to sort out how snow has changed.}
+\end{frame}
+
+\begin{frame}{NDSI plot}
+\frametitle{\textcolor{black}{NDSI plot}}
+\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{ndsi.png}
+\textit{\tiny Here there is a weaker detection of snow, compared to the NBSI-MS. But it is anyway a good index on which we can base our studies.}
+\end{frame}
+
+\begin{frame}{SWI plot}
+\frametitle{\textcolor{black}{SWI plot}}
+\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{SWI.png}
+\end{frame}
+
+\begin{frame}{S3 plot}
+\frametitle{\textcolor{black}{S3 plot}}
+\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{s3.png}
+\end{frame}
+
+\begin{frame}{PCA}
+\frametitle{\textcolor{pink}{PCA}}
+\begin{itemize} 
+    \item  Each \textcolor{blue}{pixel color represents the value} of the first principal component (PC1) at that location.
+    \item \textcolor{blue}{Color gradient represents the variation} in the first principal component values.
+    \item \textcolor{blue}{ggplot visualization helps you understand how the variation} captured by the first principal component is distributed across the study area, based on the differences in the input indices.\\
+\textcolor{red}{Possible interpretations:}
+\item Similarity of Indices
+\item Environmental Patterns
+\item Anomalies or Transitions
+\end{itemize}
+\end{frame}
+
+\begin{frame}{PCA}
+\frametitle{\textcolor{pink}{PCA}}
+trying to find a trend/pattern
+\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{pca plot.png}
+\end{frame}
+
+\begin{frame}{Classification}
+\frametitle{\textcolor{yellow}{CLASSIFICATION}}
+\begin{itemize}
+    \item The first classification has been set on the RasterStack made of the 6 original bands (6 layers).
+    \item A second classification has been set on the NBSI-MS raster of one layer (obtained by the interaction of all other 6 bands).
+\end{itemize}
+\textcolor{red}{Two classes} each: SNOW vs NON-SNOW
+\end{frame}
+
+\begin{frame}{R C}
+\frametitle{\textcolor{black}{R C}}
+\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{class RAST.png}
+\end{frame}
+
+\begin{frame}{NBSI-MS C}
+\frametitle{\textcolor{black}{NBSI-MS C}}
+\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{class NBSIMS.png}
+\end{frame}
+
+\begin{frame}{Classification}
+\frametitle{\textcolor{yellow}{CLASSIFICATION}}
+\begin{itemize}
+    \item Eventually we can find slight differences between a classification based on NBSI-MS and on the original Raster.
+    \item So I decided to calculate a mean between the percentages of the two classes (snow and non snow) of both years for a \textcolor{red}{more accurate result in snow difference}.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{C comparison}
+\frametitle{\textcolor{black}{C comparison}}
+\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{plot class.png}
+\end{frame}
+
+
+\section{Conclusions}
+
+\begin{frame}{Conclusions}
+\begin{itemize}
+    \item \textcolor{red}{NBSI-MS index is a strong tool} to use when determining ice cover, even against cloud cover.
+    \item \textcolor{red}{PCA} result between indexes could be interpreted to find \textcolor{red}{similar patterns} for high values across the area in terms of snow cover.
+    \item \textcolor{red}{Snow cover has decreased in the last 5 years}. This might be dued to the most recent volcano eruptions or changes in CO2 levels in atmosphere. So this results are good to be compared for further investigations.
+\end{itemize}
+\end{frame}
+
+\section{}
+\begin{frame}
+Thanks for your attention.
+\end{frame}
+
+\end{document}
