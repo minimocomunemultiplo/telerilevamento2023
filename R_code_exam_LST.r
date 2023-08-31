@@ -358,17 +358,4 @@ perc_snow22 # 17.77703
 perc_equal <- (snow_equal/tot)*100
 perc_equal # 63.0064
 
-## Re-plot for visualization
-
-par(bg="gray",bty = "n")
-plot(prediction_raster_diff,
-     legend = FALSE,
-     col = bwb,
-     main = "Difference in Ice cover",
-     xaxt = "n", yaxt = "n")
-legend("right", legend = c("Ice 1985", "equal cover", "Ice in 2022"), fill = c("white","black","blue"),
-       x = "right", y = "top", bty = "n", inset = c(0.855, 0.5))
-
-dev.off() 
-
-# Bye.
+# Bye
